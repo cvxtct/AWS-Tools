@@ -1,0 +1,9 @@
+# IDEA
+.idea/
+
+# VENV
+venv/
+
+# Python
+*.pyc
+__pycache__/
