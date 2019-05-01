@@ -8,15 +8,23 @@ from __future__ import print_function
 import datetime
 import logging
 import json
+import configparser
 import boto3
 from botocore.exceptions import ClientError, ParamValidationError
+
+
+CONFIG = configparser.ConfigParser()
+CONFIG.read('config.ini')
+PROFILE_NAME = CONFIG['GLOBAL']['PROFILE_NAME']
+REGION_NAME = CONFIG['GLOBAL']['REGION_NAME']
 
 
 def _logger(message: object) -> str:
     """Return log
     :type message: object
     """
-    logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s - %(message)s',
+                        level=logging.INFO)
     return logging.info(message)
 
 
@@ -34,16 +42,16 @@ def get_parameter(param_name: object) -> object:
     :type param_name: object
     """
     try:
-        session = boto3.session.Session(profile_name='dev',
-                                        region_name='eu-west-1')
+        session = boto3.session.Session(profile_name=PROFILE_NAME,
+                                        region_name=REGION_NAME)
         ssm_client = session.client('ssm')
         parameter = ssm_client.get_parameter(
             Name=param_name, WithDecryption=True)
         return parameter['Parameter']['Value']
     except ParamValidationError as _e:
-        print("Parameter validation error: %s" % _e)
+        _logger("Parameter validation error: %s" % _e)
     except ClientError as _e:
-        print("Unexpected error: %s" % _e)
+        _logger("Unexpected error: %s" % _e)
 
 
 def get_parameters(res_type: object) -> dict:
@@ -53,8 +61,8 @@ def get_parameters(res_type: object) -> dict:
     put parameter value belongs to parameter_name
     :type res_type: object
     """
-    session = boto3.session.Session(profile_name='dev',
-                                    region_name='eu-west-1')
+    session = boto3.session.Session(profile_name=PROFILE_NAME,
+                                    region_name=REGION_NAME)
     ssm_client = session.client('ssm')
     paginator = ssm_client.get_paginator('describe_parameters')
     params = []
