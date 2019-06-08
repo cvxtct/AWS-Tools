@@ -47,7 +47,13 @@ def get_parameter(param_name: object) -> object:
         ssm_client = session.client('ssm')
         parameter = ssm_client.get_parameter(
             Name=param_name, WithDecryption=True)
-        return parameter['Parameter']['Value']
+        return {
+            'Name': parameter['Parameter']['Name'],
+            'Value': parameter['Parameter']['Value'],
+            'Version': parameter['Parameter']['Version'],
+            'Modified': parameter['Parameter']['LastModifiedDate'],
+            'Arn': parameter['Parameter']['ARN'],
+        }
     except ParamValidationError as _e:
         _logger("Parameter validation error: %s" % _e)
     except ClientError as _e:
@@ -67,7 +73,7 @@ def get_parameters(res_type: object) -> dict:
     paginator = ssm_client.get_paginator('describe_parameters')
     params = []
     param_name = []
-    param_value = []
+    param_value = dict()
 
     for response in paginator.paginate():
         params.append(response['Parameters'])
@@ -78,12 +84,13 @@ def get_parameters(res_type: object) -> dict:
                 param_name.append((params[iteration][param_obj]['Name']))
 
     for iteration, _ in enumerate(param_name):
-        param_value.append(get_parameter(param_name[iteration]))
 
-    return json.dumps(param_value, default=_converter, indent=4)
+        param_value.update({iteration: get_parameter(param_name[iteration])})
 
+
+    return json.dumps(param_value["Items"], default=_converter, indent=4)
 
 if __name__ == '__main__':
 
-    PARAMS_SSM = get_parameters('cognito')
+    PARAMS_SSM = get_parameters('cf')
     _logger(PARAMS_SSM)
