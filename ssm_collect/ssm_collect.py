@@ -2,6 +2,7 @@
 
 """Example Code for parse SSM parameters.
    Parameter naming convention: dev/cf/cognito/userPoolId
+.. moduleauthor:: ABalazs
 """
 
 from __future__ import print_function
