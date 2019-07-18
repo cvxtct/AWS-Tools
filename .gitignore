@@ -7,3 +7,6 @@ venv/
 # Python
 *.pyc
 __pycache__/
+flake-report/
+.tox/
+AWS_Tools.egg-info/

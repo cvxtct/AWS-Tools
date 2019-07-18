@@ -88,7 +88,8 @@ def get_parameters(res_type: object) -> dict:
         param_value.update({iteration: get_parameter(param_name[iteration])})
 
 
-    return json.dumps(param_value["Items"], default=_converter, indent=4)
+
+    return json.dumps(param_value, default=_converter, indent=4)
 
 if __name__ == '__main__':
 
