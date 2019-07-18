@@ -10,3 +10,4 @@ __pycache__/
 flake-report/
 .tox/
 AWS_Tools.egg-info/
+docs/
